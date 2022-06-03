@@ -49,6 +49,9 @@ type ConsumerOptions struct {
 	// will allow messages to be reaped faster, but it will put more load on
 	// Redis.
 	ReclaimInterval time.Duration
+	// ReclaimMaxRetryCount the max number of times to retry reclaiming,
+	// if the value set to zero then it means that turn off the feature
+	ReclaimMaxRetryCount int64
 	// BufferSize determines the size of the channel uses to coordinate the
 	// processing of the messages. This determines the maximum number of
 	// in-flight messages.
@@ -91,12 +94,13 @@ type Consumer struct {
 }
 
 var defaultConsumerOptions = &ConsumerOptions{
-	Ctx:               context.Background(),
-	VisibilityTimeout: 60 * time.Second,
-	BlockingTimeout:   5 * time.Second,
-	ReclaimInterval:   1 * time.Second,
-	BufferSize:        100,
-	Concurrency:       10,
+	Ctx:                  context.Background(),
+	VisibilityTimeout:    60 * time.Second,
+	BlockingTimeout:      5 * time.Second,
+	ReclaimInterval:      1 * time.Second,
+	ReclaimMaxRetryCount: 0,
+	BufferSize:           100,
+	Concurrency:          10,
 }
 
 // NewConsumer uses a default set of options to create a Consumer. It sets Name
@@ -302,6 +306,7 @@ func (c *Consumer) reclaim() {
 								c.Errors <- errors.Wrapf(err, "error claiming %d message(s)", len(messages))
 								break
 							}
+							// condition 1:
 							// If the Redis nil error is returned, it means that
 							// the message no longer exists in the stream.
 							// However, it is still in a pending state. This
@@ -311,7 +316,10 @@ func (c *Consumer) reclaim() {
 							// through MAXLEN). Since the message no longer
 							// exists, the only way we can get it out of the
 							// pending state is to acknowledge it.
-							if err == redis.Nil {
+							// condition 2:
+							// If the number of reclaim message count greater the configuration
+							// then ack it
+							if err == redis.Nil && (r.RetryCount > c.options.ReclaimMaxRetryCount && c.options.ReclaimMaxRetryCount != 0) {
 								err = c.redis.XAck(c.ctx, stream, c.options.GroupName, r.ID).Err()
 								if err != nil {
 									c.Errors <- errors.Wrapf(err, "error acknowledging after failed claim for %q stream and %q message", stream, r.ID)
