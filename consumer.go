@@ -319,7 +319,7 @@ func (c *Consumer) reclaim() {
 							// condition 2:
 							// If the number of reclaim message count greater the configuration
 							// then ack it
-							if err == redis.Nil && (r.RetryCount > c.options.ReclaimMaxRetryCount && c.options.ReclaimMaxRetryCount != 0) {
+							if err == redis.Nil || (r.RetryCount > c.options.ReclaimMaxRetryCount && c.options.ReclaimMaxRetryCount != 0) {
 								err = c.redis.XAck(c.ctx, stream, c.options.GroupName, r.ID).Err()
 								if err != nil {
 									c.Errors <- errors.Wrapf(err, "error acknowledging after failed claim for %q stream and %q message", stream, r.ID)
