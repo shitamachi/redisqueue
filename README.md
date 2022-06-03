@@ -1,7 +1,7 @@
 # redisqueue
 
 ![Version](https://img.shields.io/badge/version-v2.1.0-green.svg)
-[![GoDoc](https://godoc.org/github.com/robinjoseph08/redisqueue?status.svg)](https://pkg.go.dev/github.com/robinjoseph08/redisqueue/v2?tab=doc)
+[![GoDoc](https://godoc.org/github.com/robinjoseph08/redisqueue?status.svg)](https://pkg.go.dev/github.com/shitamachi/redisqueue/v2?tab=doc)
 [![Build Status](https://travis-ci.org/robinjoseph08/redisqueue.svg?branch=master)](https://travis-ci.org/robinjoseph08/redisqueue)
 [![Coverage Status](https://coveralls.io/repos/github/robinjoseph08/redisqueue/badge.svg?branch=master)](https://coveralls.io/github/robinjoseph08/redisqueue?branch=master)
 [![Go Report Card](https://goreportcard.com/badge/github.com/robinjoseph08/redisqueue)](https://goreportcard.com/report/github.com/robinjoseph08/redisqueue)
@@ -38,13 +38,13 @@ versioning. So please make sure to initialize a Go module before installing
 
 ```sh
 go mod init github.com/my/repo
-go get github.com/robinjoseph08/redisqueue/v2
+go get github.com/shitamachi/redisqueue/v2
 ```
 
 Import:
 
 ```go
-import "github.com/robinjoseph08/redisqueue/v2"
+import "github.com/shitamachi/redisqueue/v2"
 ```
 
 ## Example
@@ -57,7 +57,7 @@ package main
 import (
 	"fmt"
 
-	"github.com/robinjoseph08/redisqueue/v2"
+	"github.com/shitamachi/redisqueue/v2"
 )
 
 func main() {
@@ -96,7 +96,7 @@ import (
 	"fmt"
 	"time"
 
-	"github.com/robinjoseph08/redisqueue/v2"
+	"github.com/shitamachi/redisqueue/v2"
 )
 
 func main() {
